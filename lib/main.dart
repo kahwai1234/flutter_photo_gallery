@@ -19,7 +19,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
   var num = Random();
 
   void getPhotoData() async {
-    var num1 = num.nextInt(100);
+    var num1 = num.nextInt(100) + 4;
     print(num1);
     print('ssss');
     NetworkHelper networkHelper =
