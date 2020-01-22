@@ -18,7 +18,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
   var num = Random();
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  void getPhotoData() async {
+  Future<Null> getPhotoData() async {
     var num1 = num.nextInt(96) + 4;
     NetworkHelper networkHelper =
         NetworkHelper('https://picsum.photos/v2/list?page=2&limit=$num1');
@@ -30,6 +30,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
             photoData[i]['width'], photoData[i]['height']));
       }
     });
+    return null;
   }
 
   @override
@@ -37,18 +38,17 @@ class _PhotoGalleryState extends State<PhotoGallery> {
     // TODO: implement initState
     super.initState();
     print('initstate');
-    handleRefresh();
+    Future.delayed(Duration(milliseconds: 200)).then((_) {
+      refreshKey.currentState?.show();
+    });
   }
 
   Future<Null> handleRefresh() async {
-    print(refreshKey.currentState);
     refreshKey.currentState?.show();
     await Future.delayed(
         Duration(seconds: 2)); // delayed 2 seconds for new data loading
-    getPhotoData();
     return null;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,6 @@ class _PhotoGalleryState extends State<PhotoGallery> {
           itemBuilder: (context, i) => GestureDetector(
             onLongPressStart: (details) {
               handleRefresh();
-              photoInfo.clear();
             },
             child: Card(
               margin: EdgeInsets.only(top: 8, right: 8, left: 8),
@@ -84,7 +83,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
             ),
           ),
         ),
-        onRefresh: handleRefresh,
+        onRefresh: getPhotoData,
       ),
     );
   }
