@@ -20,8 +20,6 @@ class _PhotoGalleryState extends State<PhotoGallery> {
 
   void getPhotoData() async {
     var num1 = num.nextInt(96) + 4;
-    print(num1);
-    print('ssss');
     NetworkHelper networkHelper =
         NetworkHelper('https://picsum.photos/v2/list?page=2&limit=$num1');
     var photoData = await networkHelper.getData();
@@ -42,6 +40,16 @@ class _PhotoGalleryState extends State<PhotoGallery> {
     handleRefresh();
   }
 
+  Future<Null> handleRefresh() async {
+    print(refreshKey.currentState);
+    refreshKey.currentState?.show();
+    await Future.delayed(
+        Duration(seconds: 2)); // delayed 2 seconds for new data loading
+    getPhotoData();
+    return null;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     print('d');
@@ -52,16 +60,13 @@ class _PhotoGalleryState extends State<PhotoGallery> {
         backgroundColor: Colors.teal,
       ),
       body: RefreshIndicator(
-        onRefresh: handleRefresh,
         key: refreshKey,
         child: ListView.builder(
           itemCount: photoInfo?.length,
           itemBuilder: (context, i) => GestureDetector(
-            onLongPress: () {
-              // photoInfo.clear();
-              print('longPressEnd1');
+            onLongPressStart: (details) {
               handleRefresh();
-              print('longPressEnd2');
+              photoInfo.clear();
             },
             child: Card(
               margin: EdgeInsets.only(top: 8, right: 8, left: 8),
@@ -79,17 +84,8 @@ class _PhotoGalleryState extends State<PhotoGallery> {
             ),
           ),
         ),
+        onRefresh: handleRefresh,
       ),
     );
-  }
-
-  Future<Null> handleRefresh() async {
-    print('handlefresh1');
-    refreshKey.currentState?.show();
-    await Future.delayed(
-        Duration(seconds: 2)); // delayed 2 seconds for new data loading
-    print('handlefresh2');
-    getPhotoData();
-    return null;
   }
 }
